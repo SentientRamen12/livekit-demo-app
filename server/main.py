@@ -2,11 +2,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
-from agent import entrypoint
-from services.room_service import room_service
+from services.room_service import get_room_service_instance
 from livekit import api, rtc
 import asyncio
 from config import get_settings
+from pydantic import BaseModel
 
 
 
@@ -14,24 +14,10 @@ from config import get_settings
 async def lifespan(app: FastAPI):
     # Startup code (before yield)
     print("Starting up...")
-    
-    # Create background task
-    async def background_task():
-        while True:
-            await entrypoint()
-    
-    # Start the background task
-    task = asyncio.create_task(background_task())
-    
     yield
-    
     # Shutdown code (after yield)
     print("Shutting down...")
-    task.cancel()  # Cancel the background task during shutdown
-    try:
-        await task
-    except asyncio.CancelledError:
-        print("Background task cancelled")
+
 
 app = FastAPI(lifespan=lifespan)
 
@@ -63,3 +49,20 @@ async def generate_token(identity: str):
         room='base_room',
     ))
     return {"token": token.to_jwt()}
+
+class AgentParams(BaseModel):
+    # Add the fields you need for the agent
+    identity: str
+    # Add other fields as needed
+
+@app.post("/add-agent")
+async def add_agent(body: AgentParams):
+    room_service = get_room_service_instance()
+    await room_service.add_agent(body.identity)
+    return {"message": "Agent added"}
+
+@app.post("/remove-agent")
+async def remove_agent(body: AgentParams):
+    room_service = get_room_service_instance()
+    await room_service.remove_agent(body.identity)
+    return {"message": "Agent removed"}

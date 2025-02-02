@@ -28,6 +28,7 @@ async def entrypoint(ctx: JobContext):
 
     run_multimodal_agent(ctx, participant)
 
+
     logger.info("agent started")
 
 

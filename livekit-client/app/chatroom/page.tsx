@@ -1,23 +1,60 @@
 "use client";
 
-import { LiveKitRoom, VideoConference, useParticipants } from "@livekit/components-react";
+import { LiveKitRoom, VideoConference, useParticipants, RoomName} from "@livekit/components-react";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
+import { Room } from "livekit-client";
 
 function ParticipantsList() {
   const participants = useParticipants();
+  const room = RoomName
+  
+  const handleAddAgent = async () => {
+    try {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        const response = await axios.post(`${backendUrl}/add-agent`, { identity: `agent-${uuidv4()}`});
+        console.log(response);
+    } catch (error) {
+        console.error('Error adding agent:', error);
+    }
+  };
+
+  const handleRemoveAgent = async (identity: string) => {
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      await axios.post(`${backendUrl}/remove-agent`, { identity });
+    } catch (error) {
+      console.error('Error removing agent:', error);
+    }
+  };
   
   return (
     <div className="absolute top-4 left-4 bg-white/90 p-3 rounded-lg shadow-md">
       <h3 className="font-semibold mb-2">Participants ({participants.length})</h3>
       <ul className="space-y-1">
         {participants.map((participant) => (
-          <li key={participant.identity} className="text-sm">
+          <li key={participant.identity} className="text-sm flex items-center justify-between">
             {participant.name}
+            {participant.identity.startsWith('agent-') && (
+              <button
+                onClick={() => handleRemoveAgent(participant.identity)}
+                className="ml-2 text-red-500 hover:text-red-700"
+                aria-label="Remove agent"
+              >
+                ✕
+              </button>
+            )}
           </li>
         ))}
       </ul>
+      <button
+        onClick={handleAddAgent}
+        className="mt-3 w-full bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
+      >
+        Add AI Agent
+      </button>
     </div>
   );
 }
@@ -69,6 +106,7 @@ export default function ChatroomPage() {
         >
           <VideoConference />
           <ParticipantsList />
+          <RoomName />
         </LiveKitRoom>
       </div>
     </div>
