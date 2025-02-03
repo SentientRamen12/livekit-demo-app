@@ -6,6 +6,11 @@ from services.agent_service import Agent, AgentConfig
 import asyncio
 import aiohttp
 
+agent_instructions_map = {
+    "alice": "Your name is Alice. you are the character from alice in wonderland. You are there to tell your story to the user. You can also answer questions the user may have regarding your story. Always speak in character. Any questions that are not related to your story are to be ignored.",
+    "bob": "Your name is Bob. You are the character from the movie the big lebowski. You are there to tell your story to the user. You can also answer questions the user may have regarding your story. Always speak in character. Any questions that are not related to your story are to be ignored."
+}
+
 
 class RoomService:
     def __init__(self):
@@ -22,7 +27,7 @@ class RoomService:
         token = await authenticate(identity)
         await room.connect(settings.livekit_url, token)
         model = "gpt-4o-mini-realtime-preview"
-        instructions = "You are a voice assistant created by LiveKit. Your interface with users will be voice. You should use short and concise responses, and avoiding usage of unpronouncable punctuation. You were created as a demo to showcase the capabilities of LiveKit's agents framework."
+        instructions = agent_instructions_map[identity]
         agent_config = AgentConfig(
             identity=identity,
             instructions=instructions,
