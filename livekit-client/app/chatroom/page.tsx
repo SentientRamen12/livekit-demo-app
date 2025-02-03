@@ -7,28 +7,29 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { Room } from "livekit-client";
 
-function ParticipantsList() {
-  const participants = useParticipants();
-  const room = RoomName
-  
-  const handleAddAgent = async () => {
+export async function handleAddAgent(identity: string) {
     try {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-        const response = await axios.post(`${backendUrl}/add-agent`, { identity: `agent-${uuidv4()}`});
+        const response = await axios.post(`${backendUrl}/add-agent`, { identity: identity});
         console.log(response);
     } catch (error) {
         console.error('Error adding agent:', error);
     }
-  };
+}
 
-  const handleRemoveAgent = async (identity: string) => {
+export async function handleRemoveAgent(identity: string) {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-      await axios.post(`${backendUrl}/remove-agent`, { identity });
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        const response = await axios.post(`${backendUrl}/remove-agent`, { identity: identity});
+        console.log(response);
     } catch (error) {
-      console.error('Error removing agent:', error);
+        console.error('Error removing agent:', error);
     }
-  };
+}
+
+export function ParticipantsList() {
+  const participants = useParticipants();
+  const room = RoomName
   
   return (
     <div className="absolute top-4 left-4 bg-white/90 p-3 rounded-lg shadow-md">
@@ -50,7 +51,7 @@ function ParticipantsList() {
         ))}
       </ul>
       <button
-        onClick={handleAddAgent}
+        onClick={() => handleAddAgent(`agent-${uuidv4()}`)}
         className="mt-3 w-full bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors"
       >
         Add AI Agent
@@ -113,7 +114,7 @@ export default function ChatroomPage() {
   );
 }
 
-async function generateToken(identity: string, name: string) {
+export async function generateToken(identity: string, name: string) {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const response = await fetch(`${backendUrl}/generate-token?identity=${identity}&name=${name}`);

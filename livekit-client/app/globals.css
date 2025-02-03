@@ -19,3 +19,7 @@ body {
   background: var(--background);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+.livekit-container {
+  display: none;
+}

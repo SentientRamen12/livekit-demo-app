@@ -23,9 +23,13 @@ class RoomService:
         await room.connect(settings.livekit_url, token)
         model = "gpt-4o-mini-realtime-preview"
         instructions = "You are a voice assistant created by LiveKit. Your interface with users will be voice. You should use short and concise responses, and avoiding usage of unpronouncable punctuation. You were created as a demo to showcase the capabilities of LiveKit's agents framework."
-        agent_config = AgentConfig(identity, room, instructions, model, self.session)
-        agent = Agent(agent_config)
-        task = asyncio.create_task(agent.add_agent())
+        agent_config = AgentConfig(
+            identity=identity,
+            instructions=instructions,
+            model=model
+        )
+        agent = Agent(agent_config, room)
+        task = asyncio.create_task(agent.add_agent(self.session))
         self.agents[identity] = agent
 
     

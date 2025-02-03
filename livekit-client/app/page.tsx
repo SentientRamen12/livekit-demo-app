@@ -14,7 +14,7 @@ export default function Home() {
       return;
     }
     sessionStorage.setItem('username', username.trim());
-    router.push('/chatroom');
+    router.push('/gameroom');
   };
 
   return (
