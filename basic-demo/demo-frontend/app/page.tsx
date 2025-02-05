@@ -68,26 +68,6 @@ export default function Page() {
         <RoomAudioRenderer />
         <NoAgentNotification state={agentState} />
       </LiveKitRoom>
-      <LiveKitRoom
-        token={connectionDetails?.participantToken}
-        serverUrl={connectionDetails?.serverUrl}
-        connect={connectionDetails !== undefined}
-        audio={true}
-        video={false}
-        onMediaDeviceFailure={onDeviceFailure}
-        onDisconnected={() => {
-          updateConnectionDetails(undefined);
-        }}
-        className="grid grid-rows-[2fr_1fr] items-center"
-      >
-        <SimpleVoiceAssistant onStateChange={setAgentState} />
-        <ControlBar
-          onConnectButtonClicked={onConnectButtonClicked}
-          agentState={agentState}
-        />
-        <RoomAudioRenderer />
-        <NoAgentNotification state={agentState} />
-      </LiveKitRoom>
     </main>
   );
 }

@@ -81,6 +81,15 @@ export default function Game() {
       name: 'alice'
     });
 
+    const npc3 = new Actor({ 
+      x: 700, 
+      y: 500, 
+      width: 32, 
+      height: 32, 
+      collisionType: CollisionType.Fixed,
+      name: 'doc'
+    });
+
     // Create plant/obstacle factory
     const createPlant = (x: number, y: number) => {
       const plant = new Actor({
@@ -140,16 +149,16 @@ export default function Game() {
           // 70% chance of regular grass (0,0)
           // 15% chance of flower grass (1,0)
           // 15% chance of alternate grass (0,1)
-          if (random < 0.70) {
-            spriteX = 0;
-            spriteY = 0;
-          } else if (random < 0.85) {
-            spriteX = 6;
-            spriteY = 8;
-          } else {
-            spriteX = 0;
-            spriteY = 7;
-          }
+        //   if (random < 0.70) {
+        //     spriteX = 0;
+        //     spriteY = 0;
+        //   } else if (random < 0.85) {
+        //     spriteX = 6;
+        //     spriteY = 8;
+        //   } else {
+        //     spriteX = 0;
+        //     spriteY = 7;
+        //   }
 
           const tileSprite = tilesSpriteSheet.getSprite(spriteX, spriteY);
           tileMap?.getTile(col, row)?.addGraphic(tileSprite);
@@ -163,9 +172,11 @@ export default function Game() {
       player.graphics.use(characterSpriteSheet.getSprite(0, 0));
       npc.graphics.use(characterSpriteSheet.getSprite(1, 0));
       npc2.graphics.use(characterSpriteSheet.getSprite(2, 0));
+      npc3.graphics.use(characterSpriteSheet.getSprite(5, 5));
       game.add(player);
       game.add(npc);
       game.add(npc2);
+      game.add(npc3);
 
       // Set plant sprites and add them LAST
       plants.forEach((plant, index) => {
@@ -205,9 +216,9 @@ export default function Game() {
     // Interaction Logic
     game.input.keyboard.on("press", (event) => {
       if (event.key === Keys.X) {
-        const distances = [npc, npc2].map(npc => player.pos.distance(npc.pos));
+        const distances = [npc, npc2, npc3].map(npc => player.pos.distance(npc.pos));
         const closestDistance = Math.min(...distances);
-        const closestActor = [npc, npc2][distances.indexOf(closestDistance)];
+        const closestActor = [npc, npc2, npc3][distances.indexOf(closestDistance)];
         if (closestDistance < 50) {
           if (!isChattingRef.current) {
             isChattingRef.current = true;
